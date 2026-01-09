@@ -10,13 +10,7 @@ import {
   GetPostsEssayAnswersWithLikesQueryVariables,
 } from '__generated__/operations/post.generated'
 
-import { sendGQLRequest } from '@/utils'
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
-
-import {
-  GET_POST_ESSAY_QUESTIONS_GQL,
-  GET_POSTS_ESSAY_ANSWERS_WITH_LIKES_GQL,
-} from './graphql/post'
 
 export const getLatestPosts = async (
   variables: GetLatestPostsQueryVariables
@@ -52,10 +46,13 @@ export const getPostMeta = async (
 export const getPostsEssayAnswersWithLikes = async (
   variables: GetPostsEssayAnswersWithLikesQueryVariables
 ) => {
-  const response = await sendGQLRequest<GetPostsEssayAnswersWithLikesQuery>({
-    query: GET_POSTS_ESSAY_ANSWERS_WITH_LIKES_GQL,
-    variables,
-  })
+  const response = await sendRestGqlRequest<GetPostsEssayAnswersWithLikesQuery>(
+    {
+      operation: 'posts-essay-answers-with-likes',
+      method: 'GET',
+      variables,
+    }
+  )
   return response?.data?.data?.posts
 }
 
@@ -64,8 +61,9 @@ export const getPostEssayQuestionsByPostSlug = async ({
 }: {
   slug: string
 }) => {
-  const response = await sendGQLRequest<GetPostEssayQuestionsQuery>({
-    query: GET_POST_ESSAY_QUESTIONS_GQL,
+  const response = await sendRestGqlRequest<GetPostEssayQuestionsQuery>({
+    operation: 'post-essay-questions',
+    method: 'GET',
     variables: { where: { slug } },
   })
   return response?.data?.data?.post

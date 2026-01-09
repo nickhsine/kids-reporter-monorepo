@@ -4,9 +4,7 @@ import {
   PostEssayQuestionWhereUniqueInput,
 } from '__generated__/types'
 
-import { sendGQLRequest } from '@/utils/send-gql-request'
-
-import { GET_ESSAY_QUESTION_ESSAY_ANSWERS_GQL } from './graphql/post-essay-question'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 export const getPostEssayQuestionEssayAnswers = async ({
   where,
@@ -19,8 +17,9 @@ export const getPostEssayQuestionEssayAnswers = async ({
   answerTake: number
   answerSkip: number
 }) => {
-  const response = await sendGQLRequest<GetEssayQuestionEssayAnswersQuery>({
-    query: GET_ESSAY_QUESTION_ESSAY_ANSWERS_GQL,
+  const response = await sendRestGqlRequest<GetEssayQuestionEssayAnswersQuery>({
+    operation: 'post-essay-question-answers',
+    method: 'GET',
     variables: {
       where,
       answerOrderBy,
