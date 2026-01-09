@@ -4,38 +4,8 @@ import errors from '@twreporter/errors'
 
 import { CardProp } from '@/app/(sticky-header)/_components/search/card'
 import { ContentType, Theme } from '@/constants'
-import { log, LogLevel, sendGQLRequest } from '@/utils'
-
-const topicQuery = `
-query Query($where: ProjectWhereUniqueInput!) {
-  project(where: $where) {
-    relatedPostsCount
-  }
-}
-`
-
-const authorQuery = `
-query Query($where: AuthorWhereUniqueInput!) {
-  author(where: $where) {
-    postsCount
-  }
-}
-`
-
-const tagQuery = `
-query Query($where: TagWhereUniqueInput!, $take: Int, $orderBy: [PostOrderByInput!]!) {
-  tag(where: $where) {
-    posts(take: $take, orderBy: $orderBy) {
-      heroImage {
-        resized {
-          tiny
-        }
-      }
-    }
-    postsCount
-  }
-}
-`
+import { log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 const client = customsearch('v1')
 export const defaultCount = 10
@@ -86,8 +56,9 @@ export async function transferItemsToCards(
     const url = item?.link || metaTag?.['og:url']
     const slug = url.match(/(author|topic|tag)\/([^/]*)\/?/)?.[2]
     if (contentType === ContentType.TOPIC && slug) {
-      const topicRes = await sendGQLRequest({
-        query: topicQuery,
+      const topicRes = await sendRestGqlRequest({
+        operation: 'project-related-posts-count',
+        method: 'GET',
         variables: {
           where: {
             slug: slug,
@@ -98,8 +69,9 @@ export async function transferItemsToCards(
       contentSummary.postCount =
         topicRes?.data?.data?.project?.relatedPostsCount
     } else if (contentType === ContentType.AUTHOR && slug) {
-      const authorRes = await sendGQLRequest({
-        query: authorQuery,
+      const authorRes = await sendRestGqlRequest({
+        operation: 'author-posts-count',
+        method: 'GET',
         variables: {
           where: {
             slug: slug,
@@ -109,8 +81,9 @@ export async function transferItemsToCards(
       contentSummary.category = '作者'
       contentSummary.postCount = authorRes?.data?.data?.author?.postsCount
     } else if (contentType === ContentType.TAG && slug) {
-      const tagRes = await sendGQLRequest({
-        query: tagQuery,
+      const tagRes = await sendRestGqlRequest({
+        operation: 'tag-posts',
+        method: 'GET',
         variables: {
           where: {
             slug: slug,

@@ -15,7 +15,7 @@ import {
   SUBSCRIBE_URL,
 } from '@/constants'
 import envVars from '@/environment-variables'
-import { sendGQLRequest } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 export const metadata: Metadata = {
   title: '關於少年報導者 - 少年報導者 The Reporter for Kids',
@@ -23,18 +23,6 @@ export const metadata: Metadata = {
 }
 
 export const revalidate = envVars.isProduction ? 86400 : 0 // 1 day
-
-const authorGQL = `
-query($where: AuthorWhereUniqueInput!) {
-  author(where: $where) {
-    avatar {
-      resized {
-        tiny
-      }
-    }
-  }
-}
-`
 
 const tellYouItems = [
   { image: '/assets/images/about_tell_pic1.svg', desc: '重要的議題' },
@@ -157,8 +145,9 @@ const consultants = [
 export default async function About() {
   // Fetch memeber avatar
   for (const member of teamMembers) {
-    const res = await sendGQLRequest({
-      query: authorGQL,
+    const res = await sendRestGqlRequest({
+      operation: 'author-avatar',
+      method: 'GET',
       variables: {
         where: {
           slug: member.slug,

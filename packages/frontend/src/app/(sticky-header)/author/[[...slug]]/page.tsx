@@ -9,44 +9,10 @@ import {
   DEFAULT_AVATAR,
   GENERAL_DESCRIPTION,
   KIDS_URL_ORIGIN,
-  POST_CONTENT_GQL,
   POST_PER_PAGE,
 } from '@/constants'
-import { getPostSummaries, log, LogLevel, sendGQLRequest } from '@/utils'
-
-const authorGQL = `
-  query($authorWhere2: AuthorWhereUniqueInput!, $take: Int, $skip: Int!, $orderBy: [PostOrderByInput!]!) {
-    author(where: $authorWhere2) {
-      bio
-      name
-      email
-      avatar {
-        resized {
-          tiny
-        }
-      }
-      posts(orderBy: $orderBy, take: $take, skip: $skip) {
-        ${POST_CONTENT_GQL}
-      }
-      postsCount
-    }
-  }
-`
-
-const metaGQL = `
-query($where: AuthorWhereUniqueInput!) {
-  author(where: $where) {
-    slug
-    name
-    bio
-    image {
-      resized {
-        small
-      }
-    }
-  }
-}
-`
+import { getPostSummaries, log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 export async function generateMetadata({
   params,
@@ -55,8 +21,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug?.[0]
 
-  const authorMetaRes = await sendGQLRequest({
-    query: metaGQL,
+  const authorMetaRes = await sendRestGqlRequest({
+    operation: 'author-meta',
+    method: 'GET',
     variables: {
       where: {
         slug: slug,
@@ -100,10 +67,11 @@ export default async function Author({ params }: { params: { slug: any } }) {
     notFound()
   }
 
-  const response = await sendGQLRequest({
-    query: authorGQL,
+  const response = await sendRestGqlRequest({
+    operation: 'author-posts',
+    method: 'GET',
     variables: {
-      authorWhere2: {
+      where: {
         slug: slug,
       },
       orderBy: [

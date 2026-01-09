@@ -9,82 +9,14 @@ import {
   OG_SUFFIX,
   Theme,
 } from '@/constants'
-import {
-  getFormattedDate,
-  getPostSummaries,
-  log,
-  LogLevel,
-  sendGQLRequest,
-} from '@/utils'
+import { getFormattedDate, getPostSummaries, log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 import { Content } from '../../_components/topic/content'
 import { Credits } from '../../_components/topic/credits'
 import { Leading } from '../../_components/topic/leading'
 import { RelatedPosts } from '../../_components/topic/related-posts'
 import { PublishedDate } from '../../_components/topic/styled'
-
-const query = `
-  fragment ImageEntity on Photo {
-    resized {
-      small
-      medium
-      large
-    }
-  }
-  query GetAProject($where: ProjectWhereUniqueInput!) {
-    project(where: $where) {
-      title
-      titlePosition
-      subtitle
-      content
-      credits
-      publishedDate
-      heroImage {
-        ...ImageEntity
-      }
-      mobileHeroImage {
-        ...ImageEntity
-      }
-      relatedPostsOrdered {
-        title
-        slug
-        publishedDate
-        heroImage {
-          ...ImageEntity
-        }
-        ogDescription
-        subSubcategoriesOrdered {
-          name
-          slug
-          subcategory {
-            name
-            slug
-            category {
-              name
-              slug
-              themeColor
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-const metaGQL = `
-query($where: ProjectWhereUniqueInput!) {
-  project(where: $where) {
-    publishedDate
-    ogDescription
-    ogTitle
-    ogImage {
-      resized {
-        small
-      }
-    }
-  }
-}
-`
 
 export async function generateMetadata({
   params,
@@ -93,8 +25,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug
 
-  const topicOGRes = await sendGQLRequest({
-    query: metaGQL,
+  const topicOGRes = await sendRestGqlRequest({
+    operation: 'project-meta',
+    method: 'GET',
     variables: {
       where: {
         slug: slug,
@@ -139,8 +72,9 @@ export default async function TopicPage({
   }
 
   // TODO: maybe we could try apollo-client pkg
-  const axiosRes = await sendGQLRequest({
-    query,
+  const axiosRes = await sendRestGqlRequest({
+    operation: 'project-detail',
+    method: 'GET',
     variables: {
       where: {
         slug: params.slug,

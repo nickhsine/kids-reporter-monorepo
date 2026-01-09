@@ -5,33 +5,15 @@ import { getCallBaodaozaiIntroContent } from '@/api/call-baodaozai-intro'
 import AllSiteBaodaozaiEventTrigger from '@/components/all-site-baodaozai-event-trigger'
 import Pagination from '@/components/pagination'
 import PostList from '@/components/post-list'
-import {
-  ERROR_PAGE,
-  GENERAL_DESCRIPTION,
-  POST_CONTENT_GQL,
-  POST_PER_PAGE,
-} from '@/constants'
+import { ERROR_PAGE, GENERAL_DESCRIPTION, POST_PER_PAGE } from '@/constants'
 import { BaodaozaiVisibilitySetter } from '@/services/call-baodaozai'
-import { getPostSummaries, log, LogLevel, sendGQLRequest } from '@/utils'
+import { getPostSummaries, log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 export const metadata: Metadata = {
   title: '所有文章 - 少年報導者 The Reporter for Kids',
   description: GENERAL_DESCRIPTION,
 }
-
-const postsCountGQL = `
-query Query {
-  postsCount
-}
-`
-
-const latestPostsGQL = `
-query($orderBy: [PostOrderByInput!]!, $take: Int, $skip: Int!) {
-  posts(orderBy: $orderBy, take: $take, skip: $skip) {
-    ${POST_CONTENT_GQL}
-  }
-}
-`
 
 // TODO: improve posts loading with ajax instead of routing to avoid page reload
 // Latest post page's routing path: /all/[page num], ex: /all/1
@@ -48,8 +30,9 @@ export default async function LatestPosts({
   }
 
   // Fetch total posts count
-  const postsCountRes = await sendGQLRequest({
-    query: postsCountGQL,
+  const postsCountRes = await sendRestGqlRequest({
+    operation: 'posts-count',
+    method: 'GET',
   })
   if (!postsCountRes) {
     log(LogLevel.WARNING, `Empty post count response!`)
@@ -68,12 +51,15 @@ export default async function LatestPosts({
     }
 
     // Fetch posts of specific page
-    const postsRes = await sendGQLRequest({
-      query: latestPostsGQL,
+    const postsRes = await sendRestGqlRequest({
+      operation: 'posts-paged',
+      method: 'GET',
       variables: {
-        orderBy: {
-          publishedDate: 'desc',
-        },
+        orderBy: [
+          {
+            publishedDate: 'desc',
+          },
+        ],
         take: POST_PER_PAGE,
         skip: (currentPage - 1) * POST_PER_PAGE,
       },

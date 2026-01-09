@@ -8,36 +8,10 @@ import {
   GENERAL_DESCRIPTION,
   KIDS_URL_ORIGIN,
   OG_SUFFIX,
-  POST_CONTENT_GQL,
   POST_PER_PAGE,
 } from '@/constants'
-import { getPostSummaries, log, LogLevel, sendGQLRequest } from '@/utils'
-
-const tagGQL = `
-query($where: TagWhereUniqueInput!, $take: Int, $skip: Int!, $orderBy: [PostOrderByInput!]!) {
-  tag(where: $where) {
-    posts(orderBy: $orderBy, take: $take, skip: $skip) {
-      ${POST_CONTENT_GQL}
-    }
-    postsCount
-    name
-  }
-}
-`
-
-const metaGQL = `
-query($where: TagWhereUniqueInput!) {
-  tag(where: $where) {
-    ogDescription
-    ogTitle
-    ogImage {
-      resized {
-        small
-      }
-    }
-  }
-}
-`
+import { getPostSummaries, log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 export async function generateMetadata({
   params,
@@ -46,8 +20,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug?.[0]
 
-  const tagOGRes = await sendGQLRequest({
-    query: metaGQL,
+  const tagOGRes = await sendRestGqlRequest({
+    operation: 'tag-meta',
+    method: 'GET',
     variables: {
       where: {
         slug: slug,
@@ -90,8 +65,9 @@ export default async function Tag({ params }: { params: { slug: any } }) {
     notFound()
   }
 
-  const response = await sendGQLRequest({
-    query: tagGQL,
+  const response = await sendRestGqlRequest({
+    operation: 'tag-posts',
+    method: 'GET',
     variables: {
       where: {
         slug: slug,

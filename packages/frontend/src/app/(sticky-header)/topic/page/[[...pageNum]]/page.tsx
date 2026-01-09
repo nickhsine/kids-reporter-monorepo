@@ -10,19 +10,13 @@ import PostSlider from '@/components/post-slider'
 import {
   FALLBACK_IMG,
   GENERAL_DESCRIPTION,
-  POST_CONTENT_GQL,
   POST_PER_PAGE,
   Theme,
   TOPIC_PAGE_ROUTE,
 } from '@/constants'
 import { BaodaozaiVisibilitySetter } from '@/services/call-baodaozai'
-import {
-  getFormattedDate,
-  getPostSummaries,
-  log,
-  LogLevel,
-  sendGQLRequest,
-} from '@/utils'
+import { getFormattedDate, getPostSummaries, log, LogLevel } from '@/utils'
+import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
 import styles from './page.module.css'
 
@@ -34,32 +28,6 @@ const ImageWithFallback = dynamic(
 export const metadata: Metadata = {
   title: '彙整: 專題 - 少年報導者 The Reporter for Kids',
   description: GENERAL_DESCRIPTION,
-}
-
-const genTopicsGQL = (hasRelatedPosts: boolean): string => {
-  const relatedPostsGQL = `
-    relatedPostsOrdered {
-      ${POST_CONTENT_GQL}
-    }
-  `
-
-  return `
-  query ($orderBy: [ProjectOrderByInput!]!, $take: Int, $skip: Int!) {
-    projects(orderBy: $orderBy, take: $take, skip: $skip) {
-      title
-      slug
-      ogDescription
-      heroImage {
-        resized {
-          medium
-        }
-      }
-      publishedDate
-      ${hasRelatedPosts ? relatedPostsGQL : ''}
-    }
-    projectsCount
-  }
-  `
 }
 
 type TopicSummary = {
@@ -170,8 +138,9 @@ export default async function Topic({
 
   const [projectsRes, topicsIntroContentRes] = await Promise.allSettled([
     // Fetch projects of specific page
-    sendGQLRequest({
-      query: genTopicsGQL(currentPage === 1),
+    sendRestGqlRequest({
+      operation: 'projects-paged',
+      method: 'GET',
       variables: {
         orderBy: [
           {
@@ -180,6 +149,7 @@ export default async function Topic({
         ],
         take: POST_PER_PAGE,
         skip: (currentPage - 1) * POST_PER_PAGE,
+        includeRelatedPosts: currentPage === 1,
       },
     }),
     getCallBaodaozaiIntroContent({ where: { page: 'topics' } }),
