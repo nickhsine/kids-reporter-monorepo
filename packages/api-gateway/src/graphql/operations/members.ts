@@ -94,4 +94,24 @@ export const operations: Record<string, Operation> = {
       return { where: ensureRecord(input.where, 'Missing where') }
     },
   },
+  'member-essay-answers-has-liked': {
+    method: 'GET',
+    auth: 'auth',
+    operationName: 'GetMemberEssayAnswersHasLiked',
+    document: `
+      query GetMemberEssayAnswersHasLiked($essayAnswerIds: [ID!]!) {
+        getMemberEssayAnswersHasLiked(essayAnswerIds: $essayAnswerIds) {
+          essayAnswerId
+          hasLiked
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      if (!Array.isArray(input.essayAnswerIds)) {
+        throw new Error('Missing essayAnswerIds')
+      }
+      return { essayAnswerIds: input.essayAnswerIds }
+    },
+  },
 }

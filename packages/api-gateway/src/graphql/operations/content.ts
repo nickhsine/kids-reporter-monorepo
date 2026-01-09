@@ -7,6 +7,19 @@ import {
   toInt,
 } from './shared.js'
 
+const normalizeOrderBy = (raw: unknown, fallback: unknown[]): unknown[] => {
+  if (Array.isArray(raw)) {
+    return raw
+  }
+  if (raw && typeof raw === 'object') {
+    return [ensureRecord(raw, 'Missing orderBy')]
+  }
+  return fallback
+}
+
+const normalizeBoolean = (raw: unknown): boolean =>
+  raw === true || raw === 'true'
+
 export const operations: Record<string, Operation> = {
   'latest-posts': {
     method: 'GET',
@@ -371,6 +384,410 @@ export const operations: Record<string, Operation> = {
               category { name slug themeColor }
             }
           }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'posts-count': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'PostsCount',
+    document: `
+      query PostsCount {
+        postsCount
+      }
+    `,
+    buildVariables: () => ({}),
+  },
+  'posts-paged': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetPosts',
+    document: `
+      ${postContentFragment}
+      query GetPosts($orderBy: [PostOrderByInput!]!, $take: Int, $skip: Int) {
+        posts(orderBy: $orderBy, take: $take, skip: $skip) {
+          ...PostContent
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
+        take: toInt(input.take),
+        skip: toInt(input.skip),
+      }
+    },
+  },
+  'posts-essay-answers-with-likes': {
+    method: 'GET',
+    auth: 'public',
+    operationName: 'GetPostsEssayAnswersWithLikes',
+    document: `
+      query GetPostsEssayAnswersWithLikes(
+        $orderBy: [PostOrderByInput!]!
+        $take: Int
+        $skip: Int
+        $answerOrderBy: [PostEssayAnswerOrderByInput!]!
+        $answerTake: Int
+        $where: PostWhereInput!
+      ) {
+        posts(orderBy: $orderBy, take: $take, skip: $skip, where: $where) {
+          id
+          title
+          slug
+          heroImage { resized { medium } }
+          subSubcategoriesOrdered { name }
+          postEssayQuestions {
+            id
+            title
+            hint
+            answers(orderBy: $answerOrderBy, take: $answerTake) {
+              id
+              content
+              member {
+                id
+                avatar { id fileUrl }
+                name
+                nickname
+                email
+              }
+              likesCount
+            }
+          }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
+        take: toInt(input.take),
+        skip: toInt(input.skip),
+        answerOrderBy: normalizeOrderBy(input.answerOrderBy, [
+          { createdAt: 'desc' },
+        ]),
+        answerTake: toInt(input.answerTake),
+        where: ensureRecord(input.where, 'Missing where'),
+      }
+    },
+  },
+  'post-essay-questions': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetPostEssayQuestions',
+    document: `
+      query GetPostEssayQuestions($where: PostWhereUniqueInput!) {
+        post(where: $where) {
+          id
+          slug
+          title
+          heroImage { resized { medium } }
+          postEssayQuestions { id title hint }
+          subSubcategoriesOrdered { name }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'tag-posts': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetTagPosts',
+    document: `
+      ${postContentFragment}
+      query GetTagPosts(
+        $where: TagWhereUniqueInput!
+        $take: Int
+        $skip: Int
+        $orderBy: [PostOrderByInput!]!
+      ) {
+        tag(where: $where) {
+          posts(orderBy: $orderBy, take: $take, skip: $skip) {
+            ...PostContent
+          }
+          postsCount
+          name
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        where: ensureRecord(input.where, 'Missing where'),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
+        take: toInt(input.take),
+        skip: toInt(input.skip),
+      }
+    },
+  },
+  'tag-meta': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetTagMeta',
+    document: `
+      query GetTagMeta($where: TagWhereUniqueInput!) {
+        tag(where: $where) {
+          ogDescription
+          ogTitle
+          ogImage { resized { small } }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'project-detail': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetProject',
+    document: `
+      ${postContentFragment}
+      fragment ImageEntity on Photo {
+        resized { small medium large }
+      }
+      query GetProject($where: ProjectWhereUniqueInput!) {
+        project(where: $where) {
+          title
+          titlePosition
+          subtitle
+          content
+          credits
+          publishedDate
+          heroImage { ...ImageEntity }
+          mobileHeroImage { ...ImageEntity }
+          relatedPostsOrdered {
+            title
+            slug
+            publishedDate
+            heroImage { ...ImageEntity }
+            ogDescription
+            subSubcategoriesOrdered {
+              name
+              slug
+              subcategory {
+                name
+                slug
+                category { name slug themeColor }
+              }
+            }
+          }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'project-meta': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetProjectMeta',
+    document: `
+      query GetProjectMeta($where: ProjectWhereUniqueInput!) {
+        project(where: $where) {
+          publishedDate
+          ogDescription
+          ogTitle
+          ogImage { resized { small } }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'projects-paged': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetProjects',
+    document: `
+      ${postContentFragment}
+      query GetProjects(
+        $orderBy: [ProjectOrderByInput!]!
+        $take: Int
+        $skip: Int
+        $includeRelatedPosts: Boolean!
+      ) {
+        projects(orderBy: $orderBy, take: $take, skip: $skip) {
+          title
+          slug
+          ogDescription
+          heroImage { resized { medium } }
+          publishedDate
+          relatedPostsOrdered @include(if: $includeRelatedPosts) {
+            ...PostContent
+          }
+        }
+        projectsCount
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
+        take: toInt(input.take),
+        skip: toInt(input.skip),
+        includeRelatedPosts: normalizeBoolean(input.includeRelatedPosts),
+      }
+    },
+  },
+  'project-related-posts-count': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetProjectRelatedPostsCount',
+    document: `
+      query GetProjectRelatedPostsCount(
+        $where: ProjectWhereUniqueInput!
+      ) {
+        project(where: $where) {
+          relatedPostsCount
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'author-posts': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetAuthorPosts',
+    document: `
+      ${postContentFragment}
+      query GetAuthorPosts(
+        $where: AuthorWhereUniqueInput!
+        $take: Int
+        $skip: Int
+        $orderBy: [PostOrderByInput!]!
+      ) {
+        author(where: $where) {
+          bio
+          name
+          email
+          avatar { resized { tiny } }
+          posts(orderBy: $orderBy, take: $take, skip: $skip) {
+            ...PostContent
+          }
+          postsCount
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        where: ensureRecord(input.where, 'Missing where'),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
+        take: toInt(input.take),
+        skip: toInt(input.skip),
+      }
+    },
+  },
+  'author-meta': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetAuthorMeta',
+    document: `
+      query GetAuthorMeta($where: AuthorWhereUniqueInput!) {
+        author(where: $where) {
+          slug
+          name
+          bio
+          image { resized { small } }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'author-avatar': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetAuthorAvatar',
+    document: `
+      query GetAuthorAvatar($where: AuthorWhereUniqueInput!) {
+        author(where: $where) {
+          avatar { resized { tiny } }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'author-posts-count': {
+    method: 'GET',
+    cacheTtl: 120,
+    auth: 'public',
+    operationName: 'GetAuthorPostsCount',
+    document: `
+      query GetAuthorPostsCount($where: AuthorWhereUniqueInput!) {
+        author(where: $where) {
+          postsCount
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'posts-sitemap': {
+    method: 'GET',
+    cacheTtl: 300,
+    auth: 'public',
+    operationName: 'GetPostsForSitemap',
+    document: `
+      query GetPostsForSitemap($where: PostWhereInput!) {
+        posts(where: $where) {
+          slug
+          publishedDate
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
+  'projects-sitemap': {
+    method: 'GET',
+    cacheTtl: 300,
+    auth: 'public',
+    operationName: 'GetProjectsForSitemap',
+    document: `
+      query GetProjectsForSitemap($where: ProjectWhereInput!) {
+        projects(where: $where) {
+          slug
+          publishedDate
         }
       }
     `,

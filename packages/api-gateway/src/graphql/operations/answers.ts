@@ -158,4 +158,83 @@ export const operations: Record<string, Operation> = {
       return { id, data: ensureRecord(input.data, 'Missing data') }
     },
   },
+  'post-essay-question-answers': {
+    method: 'GET',
+    auth: 'public',
+    operationName: 'GetEssayQuestionEssayAnswers',
+    document: `
+      query GetEssayQuestionEssayAnswers(
+        $where: PostEssayQuestionWhereUniqueInput!
+        $answerOrderBy: [PostEssayAnswerOrderByInput!]!
+        $answerTake: Int!
+        $answerSkip: Int
+      ) {
+        postEssayQuestion(where: $where) {
+          id
+          title
+          hint
+          answers(orderBy: $answerOrderBy, take: $answerTake, skip: $answerSkip) {
+            id
+            content
+            member {
+              id
+              avatar { fileUrl id }
+              name
+              nickname
+              email
+            }
+            likesCount
+          }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return {
+        where: ensureRecord(input.where, 'Missing where'),
+        answerOrderBy: Array.isArray(input.answerOrderBy)
+          ? input.answerOrderBy
+          : [ensureRecord(input.answerOrderBy, 'Missing answerOrderBy')],
+        answerTake: toInt(input.answerTake),
+        answerSkip: toInt(input.answerSkip),
+      }
+    },
+  },
+  'create-post-essay-answer-like': {
+    method: 'POST',
+    auth: 'auth',
+    operationName: 'CreatePostEssayAnswerLike',
+    document: `
+      mutation CreatePostEssayAnswerLike(
+        $data: PostEssayAnswerLikeCreateInput!
+      ) {
+        createPostEssayAnswerLike(data: $data) {
+          answer { id }
+          member { id }
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { data: ensureRecord(input.data, 'Missing data') }
+    },
+  },
+  'delete-post-essay-answer-like': {
+    method: 'POST',
+    auth: 'auth',
+    operationName: 'DeletePostEssayAnswerLike',
+    document: `
+      mutation DeletePostEssayAnswerLike(
+        $where: PostEssayAnswerLikeWhereUniqueInput!
+      ) {
+        deletePostEssayAnswerLike(where: $where) {
+          id
+        }
+      }
+    `,
+    buildVariables: (req) => {
+      const input = ensureRecord(parseVars(req), 'Missing variables')
+      return { where: ensureRecord(input.where, 'Missing where') }
+    },
+  },
 }
