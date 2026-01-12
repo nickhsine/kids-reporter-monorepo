@@ -43,6 +43,44 @@ export const ensureArray = (val: unknown, errorMessage: string): unknown[] => {
   return val
 }
 
+type NormalizeOrderByOptions = {
+  fallback?: unknown[]
+  fieldName?: string
+}
+
+export const normalizeOrderBy = (
+  raw: unknown,
+  { fallback, fieldName = 'orderBy' }: NormalizeOrderByOptions = {}
+): unknown[] => {
+  if (Array.isArray(raw)) {
+    return raw
+  }
+  if (raw && typeof raw === 'object') {
+    return [ensureRecord(raw, `Expected an object for ${fieldName} item`)]
+  }
+  if (fallback !== undefined) {
+    return fallback
+  }
+  throw new Error(`Missing ${fieldName}`)
+}
+
+export const normalizeBoolean = (raw: unknown): boolean => {
+  if (typeof raw === 'boolean') {
+    return raw
+  }
+  if (typeof raw === 'number') {
+    if (raw === 1) return true
+    if (raw === 0) return false
+    return false
+  }
+  if (typeof raw === 'string') {
+    const normalized = raw.trim().toLowerCase()
+    if (normalized === 'true' || normalized === '1') return true
+    if (normalized === 'false' || normalized === '0') return false
+  }
+  return false
+}
+
 export const parseVars = (
   req: express.Request
 ): Record<string, unknown> | unknown[] => {

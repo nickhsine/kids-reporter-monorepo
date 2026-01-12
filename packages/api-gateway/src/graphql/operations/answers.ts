@@ -1,4 +1,10 @@
-import { ensureRecord, Operation, parseVars, toInt } from './shared.js'
+import {
+  ensureRecord,
+  normalizeOrderBy,
+  Operation,
+  parseVars,
+  toInt,
+} from './shared.js'
 
 export const operations: Record<string, Operation> = {
   'post-choice-answers': {
@@ -110,9 +116,9 @@ export const operations: Record<string, Operation> = {
     buildVariables: (req) => {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
-        orderBy: Array.isArray(input.orderBy)
-          ? input.orderBy
-          : [{ createdAt: 'desc' }],
+        orderBy: normalizeOrderBy(input.orderBy, {
+          fallback: [{ createdAt: 'desc' }],
+        }),
         take: toInt(input.take),
       }
     },
@@ -192,9 +198,9 @@ export const operations: Record<string, Operation> = {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
         where: ensureRecord(input.where, 'Missing where'),
-        answerOrderBy: Array.isArray(input.answerOrderBy)
-          ? input.answerOrderBy
-          : [ensureRecord(input.answerOrderBy, 'Missing answerOrderBy')],
+        answerOrderBy: normalizeOrderBy(input.answerOrderBy, {
+          fieldName: 'answerOrderBy',
+        }),
         answerTake: toInt(input.answerTake),
         answerSkip: toInt(input.answerSkip),
       }
