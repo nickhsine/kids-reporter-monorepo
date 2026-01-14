@@ -1,10 +1,4 @@
-import {
-  ensureRecord,
-  normalizeOrderBy,
-  Operation,
-  parseVars,
-  toInt,
-} from './shared.js'
+import { ensureRecord, normalizeOrderBy, Operation, toInt } from './shared.js'
 
 export const operations: Record<string, Operation> = {
   'post-choice-answers': {
@@ -22,8 +16,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { where: ensureRecord(input.where, 'Missing where') }
     },
   },
@@ -40,8 +33,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { data: ensureRecord(input.data, 'Missing data') }
     },
   },
@@ -61,8 +53,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       const id = input.id
       if (typeof id !== 'string') {
         throw new Error('Missing id')
@@ -84,8 +75,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { where: ensureRecord(input.where, 'Missing where') }
     },
   },
@@ -113,8 +103,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return {
         orderBy: normalizeOrderBy(input.orderBy, [{ createdAt: 'desc' }]),
         take: toInt(input.take),
@@ -133,8 +122,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { data: ensureRecord(input.data, 'Missing data') }
     },
   },
@@ -153,8 +141,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       const id = input.id
       if (typeof id !== 'string') {
         throw new Error('Missing id')
@@ -192,8 +179,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return {
         where: ensureRecord(input.where, 'Missing where'),
         answerOrderBy: normalizeOrderBy(input.answerOrderBy, [
@@ -218,8 +204,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { data: ensureRecord(input.data, 'Missing data') }
     },
   },
@@ -236,8 +221,7 @@ export const operations: Record<string, Operation> = {
         }
       }
     `,
-    buildVariables: (req) => {
-      const input = ensureRecord(parseVars(req), 'Missing variables')
+    buildVariables: (input) => {
       return { where: ensureRecord(input.where, 'Missing where') }
     },
   },

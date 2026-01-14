@@ -6,7 +6,7 @@ export type Operation = {
   auth: 'public' | 'auth'
   operationName: string
   document: string
-  buildVariables: (req: express.Request) => Record<string, unknown>
+  buildVariables: (input: Record<string, unknown>) => Record<string, unknown>
 }
 
 export const postContentFragment = `
@@ -73,18 +73,16 @@ export const normalizeBoolean = (raw: unknown): boolean => {
   return false
 }
 
-export const parseVars = (
-  req: express.Request
-): Record<string, unknown> | unknown[] => {
+export const parseVars = (req: express.Request): Record<string, unknown> => {
   const source = req.method === 'GET' ? req.query : req.body
   const raw = (isRecord(source) ? source.variables : source) ?? {}
   if (typeof raw === 'string') {
     try {
       const parsed = JSON.parse(raw)
-      if (isRecord(parsed) || Array.isArray(parsed)) {
+      if (isRecord(parsed)) {
         return parsed
       }
-      throw new Error('Variables must be an object or array')
+      throw new Error('Variables must be an object')
     } catch (_err) {
       throw new Error(
         'Invalid JSON in variables: ' +
@@ -92,10 +90,10 @@ export const parseVars = (
       )
     }
   }
-  if (isRecord(raw) || Array.isArray(raw)) {
+  if (isRecord(raw)) {
     return raw
   }
-  throw new Error('Variables must be an object or array')
+  throw new Error('Variables must be an object')
 }
 
 export const toInt = (val: unknown): number | undefined => {
