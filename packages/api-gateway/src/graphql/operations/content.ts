@@ -26,9 +26,9 @@ export const operations: Record<string, Operation> = {
     buildVariables: (req) => {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       const take = toInt(input.take)
-      const orderBy = normalizeOrderBy(input.orderBy, {
-        fallback: [{ publishedDate: 'desc' }],
-      })
+      const orderBy = normalizeOrderBy(input.orderBy, [
+        { publishedDate: 'desc' },
+      ])
       return { orderBy, take }
     },
   },
@@ -409,9 +409,7 @@ export const operations: Record<string, Operation> = {
     buildVariables: (req) => {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
-        orderBy: normalizeOrderBy(input.orderBy, {
-          fallback: [{ publishedDate: 'desc' }],
-        }),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
         take: toInt(input.take),
         skip: toInt(input.skip),
       }
@@ -459,15 +457,12 @@ export const operations: Record<string, Operation> = {
     buildVariables: (req) => {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
-        orderBy: normalizeOrderBy(input.orderBy, {
-          fallback: [{ publishedDate: 'desc' }],
-        }),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
         take: toInt(input.take),
         skip: toInt(input.skip),
-        answerOrderBy: normalizeOrderBy(input.answerOrderBy, {
-          fallback: [{ createdAt: 'desc' }],
-          fieldName: 'answerOrderBy',
-        }),
+        answerOrderBy: normalizeOrderBy(input.answerOrderBy, [
+          { createdAt: 'desc' },
+        ]),
         answerTake: toInt(input.answerTake),
         where: ensureRecord(input.where, 'Missing where'),
       }
@@ -521,9 +516,7 @@ export const operations: Record<string, Operation> = {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
         where: ensureRecord(input.where, 'Missing where'),
-        orderBy: normalizeOrderBy(input.orderBy, {
-          fallback: [{ publishedDate: 'desc' }],
-        }),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
         take: toInt(input.take),
         skip: toInt(input.skip),
       }
@@ -641,9 +634,7 @@ export const operations: Record<string, Operation> = {
     buildVariables: (req) => {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
-        orderBy: normalizeOrderBy(input.orderBy, {
-          fallback: [{ publishedDate: 'desc' }],
-        }),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
         take: toInt(input.take),
         skip: toInt(input.skip),
         includeRelatedPosts: normalizeBoolean(input.includeRelatedPosts),
@@ -698,9 +689,7 @@ export const operations: Record<string, Operation> = {
       const input = ensureRecord(parseVars(req), 'Missing variables')
       return {
         where: ensureRecord(input.where, 'Missing where'),
-        orderBy: normalizeOrderBy(input.orderBy, {
-          fallback: [{ publishedDate: 'desc' }],
-        }),
+        orderBy: normalizeOrderBy(input.orderBy, [{ publishedDate: 'desc' }]),
         take: toInt(input.take),
         skip: toInt(input.skip),
       }

@@ -43,25 +43,17 @@ export const ensureArray = (val: unknown, errorMessage: string): unknown[] => {
   return val
 }
 
-type NormalizeOrderByOptions = {
-  fallback?: unknown[]
-  fieldName?: string
-}
-
 export const normalizeOrderBy = (
   raw: unknown,
-  { fallback, fieldName = 'orderBy' }: NormalizeOrderByOptions = {}
+  fallback: unknown[] = []
 ): unknown[] => {
   if (Array.isArray(raw)) {
     return raw
   }
   if (raw && typeof raw === 'object') {
-    return [ensureRecord(raw, `Expected an object for ${fieldName} item`)]
+    return [raw]
   }
-  if (fallback !== undefined) {
-    return fallback
-  }
-  throw new Error(`Missing ${fieldName}`)
+  return fallback
 }
 
 export const normalizeBoolean = (raw: unknown): boolean => {
