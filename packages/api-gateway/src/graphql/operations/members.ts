@@ -1,3 +1,5 @@
+import gql from 'graphql-tag'
+
 import { ensureRecord, Operation, toInt } from './shared.js'
 
 export const operations: Record<string, Operation> = {
@@ -5,7 +7,7 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'auth',
     operationName: 'GetMemberProfile',
-    document: `
+    document: gql`
       query GetMemberProfile($where: MemberWhereUniqueInput!) {
         member(where: $where) {
           id
@@ -16,7 +18,10 @@ export const operations: Record<string, Operation> = {
           twreporter_user_id
           showBaodaozai
           essayQuestionCount
-          avatar { id fileUrl }
+          avatar {
+            id
+            fileUrl
+          }
           createdAt
         }
       }
@@ -29,7 +34,7 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'UpdateMemberProfile',
-    document: `
+    document: gql`
       mutation UpdateMemberProfile(
         $where: MemberWhereUniqueInput!
         $data: MemberUpdateInput!
@@ -41,7 +46,9 @@ export const operations: Record<string, Operation> = {
           contactEmail
           showBaodaozai
           essayQuestionCount
-          avatar { id }
+          avatar {
+            id
+          }
         }
       }
     `,
@@ -56,15 +63,9 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'auth',
     operationName: 'GetMemberPostsWithAnswers',
-    document: `
-      query GetMemberPostsWithAnswers(
-        $take: Int
-        $nextCursor: String
-      ) {
-        getMemberPostsWithAnswers(
-          take: $take
-          cursor: $nextCursor
-        )
+    document: gql`
+      query GetMemberPostsWithAnswers($take: Int, $nextCursor: String) {
+        getMemberPostsWithAnswers(take: $take, cursor: $nextCursor)
       }
     `,
     buildVariables: (input) => {
@@ -79,7 +80,7 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'DeleteMemberAvatar',
-    document: `
+    document: gql`
       mutation DeleteMemberAvatar($where: MemberAvatarWhereUniqueInput!) {
         deleteMemberAvatar(where: $where) {
           id
@@ -94,7 +95,7 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'auth',
     operationName: 'GetMemberEssayAnswersHasLiked',
-    document: `
+    document: gql`
       query GetMemberEssayAnswersHasLiked($essayAnswerIds: [ID!]!) {
         getMemberEssayAnswersHasLiked(essayAnswerIds: $essayAnswerIds) {
           essayAnswerId

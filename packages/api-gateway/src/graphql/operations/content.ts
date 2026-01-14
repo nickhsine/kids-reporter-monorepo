@@ -1,3 +1,5 @@
+import gql from 'graphql-tag'
+
 import {
   ensureArray,
   ensureRecord,
@@ -14,7 +16,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetLatestPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetLatestPosts($orderBy: [PostOrderByInput!]!, $take: Int) {
         posts(orderBy: $orderBy, take: $take) {
@@ -35,7 +37,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetEditorPicksSettings',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetEditorPicksSettings($take: Int) {
         editorPicksSettings(take: $take) {
@@ -43,7 +45,10 @@ export const operations: Record<string, Operation> = {
           editorPicksOfPostsOrdered {
             ...PostContent
           }
-          editorPicksOfTags { name slug }
+          editorPicksOfTags {
+            name
+            slug
+          }
         }
       }
     `,
@@ -56,7 +61,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 300,
     auth: 'public',
     operationName: 'GetCallBaodaozaiIntro',
-    document: `
+    document: gql`
       query GetCallBaodaozaiIntro($where: CallBaodaozaiIntroWhereUniqueInput!) {
         callBaodaozaiIntro(where: $where) {
           id
@@ -79,7 +84,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetCategoryPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetCategoryPosts(
         $where: CategoryWhereUniqueInput!
@@ -107,7 +112,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetCategoryMetadata',
-    document: `
+    document: gql`
       query GetCategoryMetadata(
         $categoryWhere: CategoryWhereUniqueInput!
         $subcategoryWhere: SubcategoryWhereInput!
@@ -115,11 +120,19 @@ export const operations: Record<string, Operation> = {
         category(where: $categoryWhere) {
           ogTitle
           ogDescription
-          ogImage { resized { medium } }
+          ogImage {
+            resized {
+              medium
+            }
+          }
           subcategories(where: $subcategoryWhere) {
             ogTitle
             ogDescription
-            ogImage { resized { medium } }
+            ogImage {
+              resized {
+                medium
+              }
+            }
           }
         }
       }
@@ -142,12 +155,15 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetCategorySubcategoriesAndThemeColor',
-    document: `
+    document: gql`
       query GetCategorySubcategoriesAndThemeColor(
         $where: CategoryWhereUniqueInput!
       ) {
         category(where: $where) {
-          subcategories { name slug }
+          subcategories {
+            name
+            slug
+          }
           themeColor
         }
       }
@@ -161,7 +177,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetSubcategoryPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetSubcategoryPosts(
         $where: SubcategoryWhereUniqueInput!
@@ -173,7 +189,9 @@ export const operations: Record<string, Operation> = {
             ...PostContent
           }
           relatedPostsCount
-          category { slug }
+          category {
+            slug
+          }
         }
       }
     `,
@@ -190,7 +208,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetSubSubcategoryPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetSubSubcategoryPosts(
         $where: SubSubcategoryWhereUniqueInput!
@@ -205,7 +223,9 @@ export const operations: Record<string, Operation> = {
           relatedPostsCount
           subcategory {
             slug
-            category { slug }
+            category {
+              slug
+            }
           }
         }
       }
@@ -224,13 +244,17 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetTopicProjects',
-    document: `
+    document: gql`
       query GetTopicProjects($orderBy: [ProjectOrderByInput!]!, $take: Int) {
         projects(orderBy: $orderBy, take: $take) {
           title
           subtitle
           slug
-          heroImage { resized { small } }
+          heroImage {
+            resized {
+              small
+            }
+          }
         }
       }
     `,
@@ -246,7 +270,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetPost',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetPost(
         $where: PostWhereUniqueInput!
@@ -260,30 +284,55 @@ export const operations: Record<string, Operation> = {
           opening
           title
           showBaodaozai
-          newsReadingGroup { items(orderBy: $orderBy) { name embedCode } }
+          newsReadingGroup {
+            items(orderBy: $orderBy) {
+              name
+              embedCode
+            }
+          }
           brief
           content
           publishedDate
           heroImage {
-            imageFile { width height }
-            resized { small medium large }
+            imageFile {
+              width
+              height
+            }
+            resized {
+              small
+              medium
+              large
+            }
           }
           heroCaption
           authors {
-            avatar { resized { tiny } }
+            avatar {
+              resized {
+                tiny
+              }
+            }
             bio
             id
             name
             slug
           }
           authorsJSON
-          tagsOrdered { name slug }
+          tagsOrdered {
+            name
+            slug
+          }
           TWReporterRelatedPostsJSON
           relatedPostsOrdered {
             title
             slug
             publishedDate
-            heroImage { resized { small medium large } }
+            heroImage {
+              resized {
+                small
+                medium
+                large
+              }
+            }
             ogDescription
             subSubcategoriesOrdered {
               name
@@ -291,7 +340,11 @@ export const operations: Record<string, Operation> = {
               subcategory {
                 name
                 slug
-                category { name slug themeColor }
+                category {
+                  name
+                  slug
+                  themeColor
+                }
               }
             }
           }
@@ -302,10 +355,17 @@ export const operations: Record<string, Operation> = {
             subcategory {
               name
               slug
-              category { name slug themeColor }
+              category {
+                name
+                slug
+                themeColor
+              }
             }
           }
-          mainProject { title slug }
+          mainProject {
+            title
+            slug
+          }
           projects {
             title
             slug
@@ -346,20 +406,28 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetPostMeta',
-    document: `
+    document: gql`
       query GetPostMeta($where: PostWhereUniqueInput!) {
         post(where: $where) {
           publishedDate
           ogDescription
           ogTitle
-          ogImage { resized { small } }
+          ogImage {
+            resized {
+              small
+            }
+          }
           subSubcategoriesOrdered {
             name
             slug
             subcategory {
               name
               slug
-              category { name slug themeColor }
+              category {
+                name
+                slug
+                themeColor
+              }
             }
           }
         }
@@ -374,7 +442,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'PostsCount',
-    document: `
+    document: gql`
       query PostsCount {
         postsCount
       }
@@ -386,7 +454,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetPosts($orderBy: [PostOrderByInput!]!, $take: Int, $skip: Int) {
         posts(orderBy: $orderBy, take: $take, skip: $skip) {
@@ -406,7 +474,7 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'public',
     operationName: 'GetPostsEssayAnswersWithLikes',
-    document: `
+    document: gql`
       query GetPostsEssayAnswersWithLikes(
         $orderBy: [PostOrderByInput!]!
         $take: Int
@@ -419,8 +487,14 @@ export const operations: Record<string, Operation> = {
           id
           title
           slug
-          heroImage { resized { medium } }
-          subSubcategoriesOrdered { name }
+          heroImage {
+            resized {
+              medium
+            }
+          }
+          subSubcategoriesOrdered {
+            name
+          }
           postEssayQuestions {
             id
             title
@@ -430,7 +504,10 @@ export const operations: Record<string, Operation> = {
               content
               member {
                 id
-                avatar { id fileUrl }
+                avatar {
+                  id
+                  fileUrl
+                }
                 name
                 nickname
                 email
@@ -459,15 +536,25 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetPostEssayQuestions',
-    document: `
+    document: gql`
       query GetPostEssayQuestions($where: PostWhereUniqueInput!) {
         post(where: $where) {
           id
           slug
           title
-          heroImage { resized { medium } }
-          postEssayQuestions { id title hint }
-          subSubcategoriesOrdered { name }
+          heroImage {
+            resized {
+              medium
+            }
+          }
+          postEssayQuestions {
+            id
+            title
+            hint
+          }
+          subSubcategoriesOrdered {
+            name
+          }
         }
       }
     `,
@@ -480,7 +567,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetTagPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetTagPosts(
         $where: TagWhereUniqueInput!
@@ -511,12 +598,16 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetTagMeta',
-    document: `
+    document: gql`
       query GetTagMeta($where: TagWhereUniqueInput!) {
         tag(where: $where) {
           ogDescription
           ogTitle
-          ogImage { resized { small } }
+          ogImage {
+            resized {
+              small
+            }
+          }
         }
       }
     `,
@@ -529,10 +620,14 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetProject',
-    document: `
+    document: gql`
       ${postContentFragment}
       fragment ImageEntity on Photo {
-        resized { small medium large }
+        resized {
+          small
+          medium
+          large
+        }
       }
       query GetProject($where: ProjectWhereUniqueInput!) {
         project(where: $where) {
@@ -542,13 +637,19 @@ export const operations: Record<string, Operation> = {
           content
           credits
           publishedDate
-          heroImage { ...ImageEntity }
-          mobileHeroImage { ...ImageEntity }
+          heroImage {
+            ...ImageEntity
+          }
+          mobileHeroImage {
+            ...ImageEntity
+          }
           relatedPostsOrdered {
             title
             slug
             publishedDate
-            heroImage { ...ImageEntity }
+            heroImage {
+              ...ImageEntity
+            }
             ogDescription
             subSubcategoriesOrdered {
               name
@@ -556,7 +657,11 @@ export const operations: Record<string, Operation> = {
               subcategory {
                 name
                 slug
-                category { name slug themeColor }
+                category {
+                  name
+                  slug
+                  themeColor
+                }
               }
             }
           }
@@ -572,13 +677,17 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetProjectMeta',
-    document: `
+    document: gql`
       query GetProjectMeta($where: ProjectWhereUniqueInput!) {
         project(where: $where) {
           publishedDate
           ogDescription
           ogTitle
-          ogImage { resized { small } }
+          ogImage {
+            resized {
+              small
+            }
+          }
         }
       }
     `,
@@ -591,7 +700,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetProjects',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetProjects(
         $orderBy: [ProjectOrderByInput!]!
@@ -603,7 +712,11 @@ export const operations: Record<string, Operation> = {
           title
           slug
           ogDescription
-          heroImage { resized { medium } }
+          heroImage {
+            resized {
+              medium
+            }
+          }
           publishedDate
           relatedPostsOrdered @include(if: $includeRelatedPosts) {
             ...PostContent
@@ -626,10 +739,8 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetProjectRelatedPostsCount',
-    document: `
-      query GetProjectRelatedPostsCount(
-        $where: ProjectWhereUniqueInput!
-      ) {
+    document: gql`
+      query GetProjectRelatedPostsCount($where: ProjectWhereUniqueInput!) {
         project(where: $where) {
           relatedPostsCount
         }
@@ -644,7 +755,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetAuthorPosts',
-    document: `
+    document: gql`
       ${postContentFragment}
       query GetAuthorPosts(
         $where: AuthorWhereUniqueInput!
@@ -656,7 +767,11 @@ export const operations: Record<string, Operation> = {
           bio
           name
           email
-          avatar { resized { tiny } }
+          avatar {
+            resized {
+              tiny
+            }
+          }
           posts(orderBy: $orderBy, take: $take, skip: $skip) {
             ...PostContent
           }
@@ -678,13 +793,17 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetAuthorMeta',
-    document: `
+    document: gql`
       query GetAuthorMeta($where: AuthorWhereUniqueInput!) {
         author(where: $where) {
           slug
           name
           bio
-          image { resized { small } }
+          image {
+            resized {
+              small
+            }
+          }
         }
       }
     `,
@@ -697,10 +816,14 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetAuthorAvatar',
-    document: `
+    document: gql`
       query GetAuthorAvatar($where: AuthorWhereUniqueInput!) {
         author(where: $where) {
-          avatar { resized { tiny } }
+          avatar {
+            resized {
+              tiny
+            }
+          }
         }
       }
     `,
@@ -713,7 +836,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 120,
     auth: 'public',
     operationName: 'GetAuthorPostsCount',
-    document: `
+    document: gql`
       query GetAuthorPostsCount($where: AuthorWhereUniqueInput!) {
         author(where: $where) {
           postsCount
@@ -729,7 +852,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 300,
     auth: 'public',
     operationName: 'GetPostsForSitemap',
-    document: `
+    document: gql`
       query GetPostsForSitemap($where: PostWhereInput!) {
         posts(where: $where) {
           slug
@@ -746,7 +869,7 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 300,
     auth: 'public',
     operationName: 'GetProjectsForSitemap',
-    document: `
+    document: gql`
       query GetProjectsForSitemap($where: ProjectWhereInput!) {
         projects(where: $where) {
           slug

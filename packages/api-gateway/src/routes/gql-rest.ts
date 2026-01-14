@@ -1,6 +1,7 @@
 // @ts-ignore `@twreporter/errors` does not have typescript definition file yet
 import _errors from '@twreporter/errors'
 import express from 'express'
+import { print } from 'graphql'
 
 import consts from '../constants.js'
 import { buildAuthContext } from '../graphql/auth.js'
@@ -117,7 +118,7 @@ export function createGqlRestRouter({
         try {
           const gqlRes = await callCmsGraphql({
             apiOrigin,
-            document: op.document,
+            document: print(op.document),
             variables,
             operationName: op.operationName,
             headers: authContext.headers,

@@ -1,3 +1,5 @@
+import gql from 'graphql-tag'
+
 import { ensureRecord, normalizeOrderBy, Operation, toInt } from './shared.js'
 
 export const operations: Record<string, Operation> = {
@@ -5,12 +7,16 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'auth',
     operationName: 'GetPostChoiceAnswers',
-    document: `
+    document: gql`
       query GetPostChoiceAnswers($where: PostChoiceAnswerWhereInput!) {
         postChoiceAnswers(where: $where) {
           id
-          question { id }
-          member { id }
+          question {
+            id
+          }
+          member {
+            id
+          }
           choiceIndex
           correct
         }
@@ -24,10 +30,12 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'CreatePostChoiceAnswer',
-    document: `
+    document: gql`
       mutation CreatePostChoiceAnswer($data: PostChoiceAnswerCreateInput!) {
         createPostChoiceAnswer(data: $data) {
-          question { id }
+          question {
+            id
+          }
           choiceIndex
           correct
         }
@@ -41,7 +49,7 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'UpdatePostChoiceAnswer',
-    document: `
+    document: gql`
       mutation UpdatePostChoiceAnswer(
         $id: ID!
         $data: PostChoiceAnswerUpdateInput!
@@ -65,12 +73,16 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'auth',
     operationName: 'GetPostEssayAnswers',
-    document: `
+    document: gql`
       query GetPostEssayAnswers($where: PostEssayAnswerWhereInput!) {
         postEssayAnswers(where: $where) {
           id
-          question { id }
-          member { id }
+          question {
+            id
+          }
+          member {
+            id
+          }
           content
         }
       }
@@ -84,17 +96,21 @@ export const operations: Record<string, Operation> = {
     cacheTtl: 60,
     auth: 'public',
     operationName: 'GetAllPostEssayAnswers',
-    document: `
+    document: gql`
       query GetAllPostEssayAnswers(
         $orderBy: [PostEssayAnswerOrderByInput!]!
         $take: Int
-  ) {
-    postEssayAnswers(orderBy: $orderBy, take: $take) {
-      id
-      question { id }
-      member {
+      ) {
+        postEssayAnswers(orderBy: $orderBy, take: $take) {
+          id
+          question {
             id
-            avatar { fileUrl }
+          }
+          member {
+            id
+            avatar {
+              fileUrl
+            }
             nickname
             name
           }
@@ -114,10 +130,12 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'CreatePostEssayAnswer',
-    document: `
+    document: gql`
       mutation CreatePostEssayAnswer($data: PostEssayAnswerCreateInput!) {
         createPostEssayAnswer(data: $data) {
-          question { id }
+          question {
+            id
+          }
           content
         }
       }
@@ -130,7 +148,7 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'UpdatePostEssayAnswer',
-    document: `
+    document: gql`
       mutation UpdatePostEssayAnswer(
         $id: ID!
         $data: PostEssayAnswerUpdateInput!
@@ -153,7 +171,7 @@ export const operations: Record<string, Operation> = {
     method: 'GET',
     auth: 'public',
     operationName: 'GetEssayQuestionEssayAnswers',
-    document: `
+    document: gql`
       query GetEssayQuestionEssayAnswers(
         $where: PostEssayQuestionWhereUniqueInput!
         $answerOrderBy: [PostEssayAnswerOrderByInput!]!
@@ -164,12 +182,19 @@ export const operations: Record<string, Operation> = {
           id
           title
           hint
-          answers(orderBy: $answerOrderBy, take: $answerTake, skip: $answerSkip) {
+          answers(
+            orderBy: $answerOrderBy
+            take: $answerTake
+            skip: $answerSkip
+          ) {
             id
             content
             member {
               id
-              avatar { fileUrl id }
+              avatar {
+                fileUrl
+                id
+              }
               name
               nickname
               email
@@ -194,13 +219,17 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'CreatePostEssayAnswerLike',
-    document: `
+    document: gql`
       mutation CreatePostEssayAnswerLike(
         $data: PostEssayAnswerLikeCreateInput!
       ) {
         createPostEssayAnswerLike(data: $data) {
-          answer { id }
-          member { id }
+          answer {
+            id
+          }
+          member {
+            id
+          }
         }
       }
     `,
@@ -212,7 +241,7 @@ export const operations: Record<string, Operation> = {
     method: 'POST',
     auth: 'auth',
     operationName: 'DeletePostEssayAnswerLike',
-    document: `
+    document: gql`
       mutation DeletePostEssayAnswerLike(
         $where: PostEssayAnswerLikeWhereUniqueInput!
       ) {
