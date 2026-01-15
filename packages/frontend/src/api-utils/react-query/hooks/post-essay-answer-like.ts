@@ -1,7 +1,7 @@
 import {
   CreatePostEssayAnswerLikeMutationVariables,
   DeletePostEssayAnswerLikeMutationVariables,
-} from '__generated__/operations/post-essay-answer-like.generated'
+} from '__generated__/operations/answers.generated'
 import { useMutation } from '@tanstack/react-query'
 
 import {

@@ -1,3 +1,4 @@
+import type { GetAuthorAvatarQuery } from '__generated__/operations/content.generated'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
@@ -145,7 +146,7 @@ const consultants = [
 export default async function About() {
   // Fetch memeber avatar
   for (const member of teamMembers) {
-    const res = await sendRestGqlRequest({
+    const res = await sendRestGqlRequest<GetAuthorAvatarQuery>({
       operation: 'author-avatar',
       method: 'GET',
       variables: {

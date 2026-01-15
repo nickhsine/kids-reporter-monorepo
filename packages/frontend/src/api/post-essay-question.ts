@@ -1,4 +1,4 @@
-import { GetEssayQuestionEssayAnswersQuery } from '__generated__/operations/post-essay-question.generated'
+import { GetEssayQuestionEssayAnswersQuery } from '__generated__/operations/answers.generated'
 import {
   PostEssayAnswerOrderByInput,
   PostEssayQuestionWhereUniqueInput,

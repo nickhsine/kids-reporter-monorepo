@@ -1,7 +1,7 @@
 import {
   CreatePostEssayAnswerMutationVariables,
   UpdatePostEssayAnswerMutationVariables,
-} from '__generated__/operations/post-essay-answer.generated'
+} from '__generated__/operations/answers.generated'
 import { PostEssayAnswerOrderByInput } from '__generated__/types'
 import { useMutation, useQuery } from '@tanstack/react-query'
 

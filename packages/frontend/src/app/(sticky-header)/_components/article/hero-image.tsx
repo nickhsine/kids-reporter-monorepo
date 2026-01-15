@@ -1,4 +1,4 @@
-import { GetPostQuery } from '__generated__/operations/post.generated'
+import { GetPostQuery } from '__generated__/operations/content.generated'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'

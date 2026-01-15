@@ -1,7 +1,7 @@
 import {
   GetSubSubcategoryPostsQuery,
   GetSubSubcategoryPostsQueryVariables,
-} from '__generated__/operations/sub-subcategory.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

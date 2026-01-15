@@ -1,9 +1,14 @@
+import type {
+  GetProjectMetaQuery,
+  GetProjectQuery,
+} from '__generated__/operations/content.generated'
 import { HeaderPostTitleSetter } from '@kids-reporter/routing-ui'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import {
   ContentType,
+  FALLBACK_IMG,
   GENERAL_DESCRIPTION,
   KIDS_URL_ORIGIN,
   OG_SUFFIX,
@@ -18,6 +23,22 @@ import { Leading } from '../../_components/topic/leading'
 import { RelatedPosts } from '../../_components/topic/related-posts'
 import { PublishedDate } from '../../_components/topic/styled'
 
+const normalizePhoto = (photo: {
+  resized?: { small?: string; medium?: string; large?: string }
+}) => {
+  return {
+    resized: {
+      small: photo.resized?.small ?? FALLBACK_IMG,
+      medium: photo.resized?.medium ?? photo.resized?.small ?? FALLBACK_IMG,
+      large:
+        photo.resized?.large ??
+        photo.resized?.medium ??
+        photo.resized?.small ??
+        FALLBACK_IMG,
+    },
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -25,7 +46,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug
 
-  const topicOGRes = await sendRestGqlRequest({
+  const topicOGRes = await sendRestGqlRequest<GetProjectMetaQuery>({
     operation: 'project-meta',
     method: 'GET',
     variables: {
@@ -72,7 +93,7 @@ export default async function TopicPage({
   }
 
   // TODO: maybe we could try apollo-client pkg
-  const axiosRes = await sendRestGqlRequest({
+  const axiosRes = await sendRestGqlRequest<GetProjectQuery>({
     operation: 'project-detail',
     method: 'GET',
     variables: {
@@ -87,18 +108,22 @@ export default async function TopicPage({
     notFound()
   }
 
-  const relatedPosts = getPostSummaries(project?.relatedPostsOrdered)
+  const relatedPosts = getPostSummaries(project?.relatedPostsOrdered ?? [])
+  const heroImage = normalizePhoto(project?.heroImage ?? {})
+  const mobileHeroImage = project?.mobileHeroImage
+    ? normalizePhoto(project.mobileHeroImage)
+    : undefined
 
   return (
     project && (
       <div>
         <HeaderPostTitleSetter postTitle={project.title} />
         <Leading
-          title={project.title}
+          title={project.title ?? ''}
           subtitle={project.subtitle ?? ''}
           titlePosition={project.titlePosition}
-          backgroundImage={project.heroImage}
-          mobileBgImage={project.mobileHeroImage}
+          backgroundImage={heroImage}
+          mobileBgImage={mobileHeroImage}
         />
         {project.publishedDate ? (
           <PublishedDate>

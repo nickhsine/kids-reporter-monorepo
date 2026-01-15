@@ -1,3 +1,8 @@
+import type {
+  GetPostsQuery,
+  PostsCountQuery,
+} from '__generated__/operations/content.generated'
+import type { Post } from '__generated__/types'
 import { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
@@ -7,6 +12,7 @@ import Pagination from '@/components/pagination'
 import PostList from '@/components/post-list'
 import { ERROR_PAGE, GENERAL_DESCRIPTION, POST_PER_PAGE } from '@/constants'
 import { BaodaozaiVisibilitySetter } from '@/services/call-baodaozai'
+import type { DeepPartial } from '@/types/utils'
 import { getPostSummaries, log, LogLevel } from '@/utils'
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 
@@ -30,16 +36,17 @@ export default async function LatestPosts({
   }
 
   // Fetch total posts count
-  const postsCountRes = await sendRestGqlRequest({
+  const postsCountRes = await sendRestGqlRequest<PostsCountQuery>({
     operation: 'posts-count',
     method: 'GET',
   })
   if (!postsCountRes) {
     log(LogLevel.WARNING, `Empty post count response!`)
   }
-  const postsCount = postsCountRes?.data?.data?.postsCount
+  const postsCount = postsCountRes?.data?.data?.postsCount ?? 0
 
-  let posts, totalPages
+  let posts: DeepPartial<Post>[] = []
+  let totalPages
   if (postsCount > 0) {
     totalPages = Math.ceil(postsCount / POST_PER_PAGE)
     if (currentPage > 1 && currentPage > totalPages) {
@@ -51,7 +58,7 @@ export default async function LatestPosts({
     }
 
     // Fetch posts of specific page
-    const postsRes = await sendRestGqlRequest({
+    const postsRes = await sendRestGqlRequest<GetPostsQuery>({
       operation: 'posts-paged',
       method: 'GET',
       variables: {
@@ -68,7 +75,7 @@ export default async function LatestPosts({
       log(LogLevel.WARNING, `Empty posts response!`)
       redirect(ERROR_PAGE)
     }
-    posts = postsRes?.data?.data?.posts
+    posts = postsRes?.data?.data?.posts ?? []
   }
 
   const postSummaries = getPostSummaries(posts)

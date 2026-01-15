@@ -8,7 +8,7 @@ import {
   GetPostQueryVariables,
   GetPostsEssayAnswersWithLikesQuery,
   GetPostsEssayAnswersWithLikesQueryVariables,
-} from '__generated__/operations/post.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

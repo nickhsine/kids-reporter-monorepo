@@ -1,7 +1,7 @@
 'use client'
 import './article.css'
 
-import { GetPostQuery } from '__generated__/operations/post.generated'
+import { GetPostQuery } from '__generated__/operations/content.generated'
 import { cn, ScrollLevel, useScrollLevel } from '@kids-reporter/routing-ui'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'

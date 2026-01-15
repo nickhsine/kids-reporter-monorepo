@@ -1,7 +1,7 @@
 import {
   GetCallBaodaozaiIntroQuery,
   GetCallBaodaozaiIntroQueryVariables,
-} from '__generated__/operations/call-baodaozai-intro.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

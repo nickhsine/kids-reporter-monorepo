@@ -1,3 +1,8 @@
+import type {
+  GetAuthorPostsCountQuery,
+  GetProjectRelatedPostsCountQuery,
+  GetTagPostsQuery,
+} from '__generated__/operations/content.generated'
 import { customsearch } from '@googleapis/customsearch'
 import { customsearch_v1 } from '@googleapis/customsearch/v1'
 import errors from '@twreporter/errors'
@@ -56,20 +61,21 @@ export async function transferItemsToCards(
       const url = item?.link || metaTag?.['og:url']
       const slug = url?.match(/(author|topic|tag)\/([^/]*)\/?/)?.[2]
       if (contentType === ContentType.TOPIC && slug) {
-        const topicRes = await sendRestGqlRequest({
-          operation: 'project-related-posts-count',
-          method: 'GET',
-          variables: {
-            where: {
-              slug: slug,
+        const topicRes =
+          await sendRestGqlRequest<GetProjectRelatedPostsCountQuery>({
+            operation: 'project-related-posts-count',
+            method: 'GET',
+            variables: {
+              where: {
+                slug: slug,
+              },
             },
-          },
-        })
+          })
         contentSummary.category = '專題'
         contentSummary.postCount =
-          topicRes?.data?.data?.project?.relatedPostsCount
+          topicRes?.data?.data?.project?.relatedPostsCount ?? 0
       } else if (contentType === ContentType.AUTHOR && slug) {
-        const authorRes = await sendRestGqlRequest({
+        const authorRes = await sendRestGqlRequest<GetAuthorPostsCountQuery>({
           operation: 'author-posts-count',
           method: 'GET',
           variables: {
@@ -79,9 +85,10 @@ export async function transferItemsToCards(
           },
         })
         contentSummary.category = '作者'
-        contentSummary.postCount = authorRes?.data?.data?.author?.postsCount
+        contentSummary.postCount =
+          authorRes?.data?.data?.author?.postsCount ?? 0
       } else if (contentType === ContentType.TAG && slug) {
-        const tagRes = await sendRestGqlRequest({
+        const tagRes = await sendRestGqlRequest<GetTagPostsQuery>({
           operation: 'tag-posts',
           method: 'GET',
           variables: {
@@ -95,9 +102,9 @@ export async function transferItemsToCards(
           },
         })
         contentSummary.category = '標籤'
-        contentSummary.postCount = tagRes?.data?.data?.tag?.postsCount
+        contentSummary.postCount = tagRes?.data?.data?.tag?.postsCount ?? 0
         contentSummary.image =
-          tagRes?.data?.data?.tag?.posts?.[0]?.heroImage?.resized?.tiny
+          tagRes?.data?.data?.tag?.posts?.[0]?.heroImage?.resized?.small
       }
 
       return { content: contentSummary }

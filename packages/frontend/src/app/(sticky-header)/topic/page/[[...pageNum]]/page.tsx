@@ -1,3 +1,4 @@
+import type { GetProjectsQuery } from '__generated__/operations/content.generated'
 import { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -138,7 +139,7 @@ export default async function Topic({
 
   const [projectsRes, topicsIntroContentRes] = await Promise.allSettled([
     // Fetch projects of specific page
-    sendRestGqlRequest({
+    sendRestGqlRequest<GetProjectsQuery>({
       operation: 'projects-paged',
       method: 'GET',
       variables: {
@@ -161,7 +162,7 @@ export default async function Topic({
 
   const projects = projectsRes.value
   const topics = projects?.data?.data?.projects
-  const topicsCount = projects?.data?.data?.projectsCount
+  const topicsCount = projects?.data?.data?.projectsCount ?? 0
   const totalPages = Math.ceil(topicsCount / POST_PER_PAGE)
   if (currentPage > 1 && currentPage > totalPages) {
     log(

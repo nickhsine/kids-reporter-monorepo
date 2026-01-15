@@ -1,3 +1,7 @@
+import type {
+  GetTagMetaQuery,
+  GetTagPostsQuery,
+} from '__generated__/operations/content.generated'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -20,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug?.[0]
 
-  const tagOGRes = await sendRestGqlRequest({
+  const tagOGRes = await sendRestGqlRequest<GetTagMetaQuery>({
     operation: 'tag-meta',
     method: 'GET',
     variables: {
@@ -65,7 +69,7 @@ export default async function Tag({ params }: { params: { slug: any } }) {
     notFound()
   }
 
-  const response = await sendRestGqlRequest({
+  const response = await sendRestGqlRequest<GetTagPostsQuery>({
     operation: 'tag-posts',
     method: 'GET',
     variables: {
@@ -87,8 +91,8 @@ export default async function Tag({ params }: { params: { slug: any } }) {
     log(LogLevel.WARNING, 'Tag not found!')
     notFound()
   }
-  const posts = tag.posts
-  const postsCount = tag.postsCount
+  const posts = tag.posts ?? []
+  const postsCount = tag.postsCount ?? 0
 
   const totalPages = Math.ceil(postsCount / POST_PER_PAGE)
   if (currentPage > 1 && currentPage > totalPages) {

@@ -2,7 +2,7 @@ import {
   GetMemberEssayAnswersHasLikedQuery,
   GetMemberEssayAnswersHasLikedQueryVariables,
   GetMemberPostsWithAnswersQueryVariables,
-} from '__generated__/operations/extended.generated'
+} from '__generated__/operations/members.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

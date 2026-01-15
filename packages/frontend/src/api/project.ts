@@ -1,7 +1,7 @@
 import {
   GetTopicProjectsQuery,
   GetTopicProjectsQueryVariables,
-} from '__generated__/operations/project.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

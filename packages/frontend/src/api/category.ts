@@ -5,7 +5,7 @@ import {
   GetCategoryPostsQueryVariables,
   GetCategorySubcategoriesAndThemeColorQuery,
   GetCategorySubcategoriesAndThemeColorQueryVariables,
-} from '__generated__/operations/category.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

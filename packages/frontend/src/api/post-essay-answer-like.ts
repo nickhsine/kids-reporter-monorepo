@@ -3,7 +3,7 @@ import {
   CreatePostEssayAnswerLikeMutationVariables,
   DeletePostEssayAnswerLikeMutation,
   DeletePostEssayAnswerLikeMutationVariables,
-} from '__generated__/operations/post-essay-answer-like.generated'
+} from '__generated__/operations/answers.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

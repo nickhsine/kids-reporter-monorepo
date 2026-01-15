@@ -1,7 +1,7 @@
 import {
   GetEditorPicksSettingsQuery,
   GetEditorPicksSettingsQueryVariables,
-} from '__generated__/operations/editor-picks-settings.generated'
+} from '__generated__/operations/content.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

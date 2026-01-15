@@ -10,6 +10,10 @@ https://github.com/vercel/next.js/issues/56018
 Therefore, so far we can't upgrade to v13.5.4 due to #56018 & #54057 remains.
 */
 
+import type {
+  GetPostsForSitemapQuery,
+  GetProjectsForSitemapQuery,
+} from '__generated__/operations/content.generated'
 import { MetadataRoute } from 'next'
 
 import { KIDS_URL_ORIGIN } from '@/constants'
@@ -25,7 +29,7 @@ const fetchSitemaps = async (): Promise<
   const sixtyDaysBefore = new Date(
     new Date().setHours(0, 0, 0, 0) - 60 * 24 * 60 * 60 * 1000
   )
-  const postsRes = await sendRestGqlRequest({
+  const postsRes = await sendRestGqlRequest<GetPostsForSitemapQuery>({
     operation: 'posts-sitemap',
     method: 'GET',
     variables: {
@@ -46,7 +50,7 @@ const fetchSitemaps = async (): Promise<
     sitemaps = [...posts]
   }
 
-  const topicsRes = await sendRestGqlRequest({
+  const topicsRes = await sendRestGqlRequest<GetProjectsForSitemapQuery>({
     operation: 'projects-sitemap',
     method: 'GET',
     variables: {

@@ -5,7 +5,7 @@ import {
   GetPostChoiceAnswersQueryVariables,
   UpdatePostChoiceAnswerMutation,
   UpdatePostChoiceAnswerMutationVariables,
-} from '__generated__/operations/post-choice-answer.generated'
+} from '__generated__/operations/answers.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

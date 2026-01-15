@@ -1,3 +1,7 @@
+import type {
+  GetAuthorMetaQuery,
+  GetAuthorPostsQuery,
+} from '__generated__/operations/content.generated'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -21,7 +25,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const slug = params.slug?.[0]
 
-  const authorMetaRes = await sendRestGqlRequest({
+  const authorMetaRes = await sendRestGqlRequest<GetAuthorMetaQuery>({
     operation: 'author-meta',
     method: 'GET',
     variables: {
@@ -67,7 +71,7 @@ export default async function Author({ params }: { params: { slug: any } }) {
     notFound()
   }
 
-  const response = await sendRestGqlRequest({
+  const response = await sendRestGqlRequest<GetAuthorPostsQuery>({
     operation: 'author-posts',
     method: 'GET',
     variables: {
@@ -88,8 +92,8 @@ export default async function Author({ params }: { params: { slug: any } }) {
     log(LogLevel.WARNING, 'Author not found!')
     notFound()
   }
-  const posts = author.posts
-  const postsCount = author.postsCount
+  const posts = author.posts ?? []
+  const postsCount = author.postsCount ?? 0
 
   const avatarURL = author.avatar?.resized?.tiny ?? DEFAULT_AVATAR
 

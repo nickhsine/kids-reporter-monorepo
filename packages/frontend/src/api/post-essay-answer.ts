@@ -7,7 +7,7 @@ import {
   GetPostEssayAnswersQueryVariables,
   UpdatePostEssayAnswerMutation,
   UpdatePostEssayAnswerMutationVariables,
-} from '__generated__/operations/post-essay-answer.generated'
+} from '__generated__/operations/answers.generated'
 import { PostEssayAnswerOrderByInput } from '__generated__/types'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'

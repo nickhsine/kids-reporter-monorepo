@@ -3,7 +3,7 @@ import {
   GetMemberProfileQueryVariables,
   UpdateMemberProfileMutation,
   UpdateMemberProfileMutationVariables,
-} from '__generated__/operations/member.generated'
+} from '__generated__/operations/members.generated'
 
 import { sendRestGqlRequest } from '@/utils/send-rest-gql'
 

@@ -1,4 +1,4 @@
-import { GetMemberPostsWithAnswersQueryVariables } from '__generated__/operations/extended.generated'
+import { GetMemberPostsWithAnswersQueryVariables } from '__generated__/operations/members.generated'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
 import {

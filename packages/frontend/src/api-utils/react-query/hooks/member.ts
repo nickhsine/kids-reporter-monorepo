@@ -1,7 +1,7 @@
 import {
   UpdateMemberProfileMutation,
   UpdateMemberProfileMutationVariables,
-} from '__generated__/operations/member.generated'
+} from '__generated__/operations/members.generated'
 import { useMutation, UseMutationOptions } from '@tanstack/react-query'
 
 import { updateMemberProfile } from '@/api/member'

@@ -1,4 +1,4 @@
-import { GetPostsEssayAnswersWithLikesQuery } from '__generated__/operations/post.generated'
+import { GetPostsEssayAnswersWithLikesQuery } from '__generated__/operations/content.generated'
 import { InfiniteData } from '@tanstack/react-query'
 
 import { PostWithTwoTopLikesAnswersPerQuestion } from '../types'

@@ -1,6 +1,6 @@
 'use client'
 
-import { GetPostQuery } from '__generated__/operations/post.generated'
+import { GetPostQuery } from '__generated__/operations/content.generated'
 import { useMemo, useState } from 'react'
 import styled from 'styled-components'
 
