@@ -12,7 +12,7 @@ RUN yarn install --immutable --ignore-scripts
 
 COPY . /build/
 
-RUN yarn build
+RUN yarn build:cloudbuild
 
 
 FROM node:${NODE_VERSION}

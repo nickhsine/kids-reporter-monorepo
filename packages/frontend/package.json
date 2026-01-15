@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"yarn codegen:local --watch\" \"next dev --port ${PORT:-3000}\"",
-    "build": "yarn codegen:production && next build",
+    "build": "yarn build:local",
+    "build:local": "yarn codegen:local && next build",
+    "build:cloudbuild": "yarn codegen:cloudbuild && next build",
     "start": "next start",
-    "analyze": "ANALYZE=true yarn build",
+    "analyze": "ANALYZE=true yarn build:local",
     "lint:check": "eslint src --ext .ts,.tsx,.js,.jsx",
     "type-check": "tsc --noEmit",
-    "codegen:local": "graphql-codegen --config codegen.ts",
-    "codegen:production": "NODE_ENV=production graphql-codegen --config codegen.ts",
+    "codegen:local": "graphql-codegen --config codegen.local.ts",
+    "codegen:cloudbuild": "graphql-codegen --config codegen.cloudbuild.ts",
     "postinstall": "yarn codegen:local && cd ../routing-ui && yarn build"
   },
   "dependencies": {

@@ -30,6 +30,11 @@ steps:
 
         if [[ "$_TARGET_PACKAGE" == "frontend" ]]; then
           cp packages/cms/schema.graphql packages/frontend/schema.graphql
+          # Ensure the operations directory exists before copying so codegen has
+          # the expected workspace layout in Cloud Build.
+          mkdir -p packages/frontend/graphql/operations
+          # Copy shared GraphQL operations into the frontend package for build-time codegen.
+          cp -r packages/api-gateway/src/graphql/operations/* packages/frontend/graphql/operations/
         fi
 
         cd packages/$_TARGET_PACKAGE

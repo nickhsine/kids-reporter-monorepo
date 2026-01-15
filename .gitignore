@@ -56,6 +56,8 @@ gcskeyfile.json
 # generated files
 packages/**/lib
 packages/**/dist
+packages/**/__generated__
+packages/frontend/graphql
 # packages/**/public/*
 
 # cursor
@@ -63,6 +65,3 @@ packages/**/dist
 
 # vscode
 .vscode
-
-# generated files
-packages/**/__generated__
