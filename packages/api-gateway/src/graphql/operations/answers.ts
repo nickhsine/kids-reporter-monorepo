@@ -105,6 +105,9 @@ export const operations: Record<string, Operation> = {
           id
           question {
             id
+            post {
+              slug
+            }
           }
           member {
             id

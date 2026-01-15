@@ -1,4 +1,5 @@
 import express from 'express'
+import type { DocumentNode } from 'graphql'
 import gql from 'graphql-tag'
 
 export type Operation = {
@@ -6,7 +7,7 @@ export type Operation = {
   cacheTtl?: number
   auth: 'public' | 'auth'
   operationName: string
-  document: string
+  document: DocumentNode
   buildVariables: (input: Record<string, unknown>) => Record<string, unknown>
 }
 
